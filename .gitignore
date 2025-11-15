@@ -1,0 +1,94 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.pyd
+*.so
+
+# Byte-compiled / optimized files
+*.pyc
+
+# Backup files
+*~
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+.env/
+.venv/
+
+# =========================
+# Environment Variables
+# =========================
+*.env
+.env.*
+!example.env
+
+# =========================
+# OS / Editor Files
+# =========================
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# =========================
+# JetBrains (PyCharm)
+# =========================
+.idea/
+
+# VSCode
+.vscode/
+.history/
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# Testing / Coverage
+# =========================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.cache/
+nosetests.xml
+coverage.xml
+
+# =========================
+# Build / Distribution
+# =========================
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Database / Local Files
+# =========================
+*.sqlite3
+*.db
+instance/
+
+# =========================
+# FastAPI / Flask specifics
+# =========================
+# Auto-generated OpenAPI schema
+openapi.json
