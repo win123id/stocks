@@ -10,6 +10,37 @@ from indicators import (
 )
 
 
+def print_table(headers, rows):
+    if not rows:
+        return
+
+    col_count = len(headers)
+    widths = [len(str(h)) for h in headers]
+
+    for row in rows:
+        for i in range(col_count):
+            if i >= len(row):
+                continue
+            value = "" if row[i] is None else str(row[i])
+            if len(value) > widths[i]:
+                widths[i] = len(value)
+
+    header_line = "  ".join(str(h).ljust(widths[i]) for i, h in enumerate(headers))
+    print(header_line)
+    print("-" * len(header_line))
+
+    for row in rows:
+        cells = []
+        for i in range(col_count):
+            value = "" if i >= len(row) or row[i] is None else str(row[i])
+            num_like = value.replace(",", "").replace(".", "").isdigit()
+            if num_like:
+                cells.append(value.rjust(widths[i]))
+            else:
+                cells.append(value.ljust(widths[i]))
+        print("  ".join(cells))
+
+
 def scan_golden_cross_for_tickers(tickers, lookback_days: int = 5, label: str = ""):
     if not tickers:
         print("\nNo tickers to scan.")
@@ -20,7 +51,7 @@ def scan_golden_cross_for_tickers(tickers, lookback_days: int = 5, label: str = 
     results = []
     for symbol in tickers:
         # 6 months of data is enough for MA20/MA50
-        hist = download_history(symbol, period="6mo", interval="1d")
+        hist = download_history(symbol, period="1y", interval="1d")
         if hist is None or "Close" not in hist.columns:
             continue
 
@@ -51,11 +82,12 @@ def scan_golden_cross_for_tickers(tickers, lookback_days: int = 5, label: str = 
         return
 
     print("\nStocks with recent 20/50 MA golden crosses:")
-    header = f"{'Symbol':<10} {'Last Price':>12} {'GC Date':>12}"
-    print(header)
-    print("-" * len(header))
-    for symbol, last_close, gc_date in results:
-        print(f"{symbol:<10} {last_close:>12,.2f} {str(gc_date):>12}")
+    headers = ["Symbol", "Last Price", "GC Date"]
+    rows = [
+        (symbol, f"{last_close:,.2f}", str(gc_date))
+        for symbol, last_close, gc_date in results
+    ]
+    print_table(headers, rows)
 
 
 
@@ -81,7 +113,7 @@ def scan_llv_sma50_value_for_tickers(
     results = []
     for symbol in tickers:
         # Use longer history for larger SMA periods (e.g. SMA200)
-        download_period = "1y" if sma_period >= 150 else "6mo"
+        download_period = "1y"
         hist = download_history(symbol, period=download_period, interval="1d")
         if hist is None:
             continue
@@ -121,11 +153,12 @@ def scan_llv_sma50_value_for_tickers(
         return
 
     print("\nStocks matching LLV(5) > SMA{}, close near SMA{}, value > 1B:".format(sma_period, sma_period))
-    header = f"{'Symbol':<10} {'Close':>12} {'SMA%s' % sma_period:>12} {'Value':>16} {'Date':>12}"
-    print(header)
-    print("-" * len(header))
-    for symbol, close, sma, value, dt in results:
-        print(f"{symbol:<10} {close:>12,.2f} {sma:>12,.2f} {value:>16,.0f} {str(dt):>12}")
+    headers = ["Symbol", "Close", f"SMA{sma_period}", "Value", "Date"]
+    rows = [
+        (symbol, f"{close:,.2f}", f"{sma:,.2f}", f"{value:,.0f}", str(dt))
+        for symbol, close, sma, value, dt in results
+    ]
+    print_table(headers, rows)
 
 
 
@@ -211,9 +244,18 @@ def scan_mode4_combo_for_tickers(tickers, label: str = ""):
         return
 
     print("\nStocks matching mode 4 combo filter:")
-    header = f"{'Symbol':<10} {'Close':>10} {'SMA20':>10} {'SMA50':>10} {'SMA150':>10} {'SMA200':>10} {'Value':>16} {'RSI14':>8} {'Date':>12}"
-    print(header)
-    print("-" * len(header))
+    headers = [
+        "Symbol",
+        "Close",
+        "SMA20",
+        "SMA50",
+        "SMA150",
+        "SMA200",
+        "Value",
+        "RSI14",
+        "Date",
+    ]
+    rows = []
     for (
         symbol,
         close,
@@ -225,7 +267,17 @@ def scan_mode4_combo_for_tickers(tickers, label: str = ""):
         rsi14,
         dt,
     ) in results:
-        print(
-            f"{symbol:<10} {close:>10,.2f} {sma20:>10,.2f} {sma50:>10,.2f} "
-            f"{sma150:>10,.2f} {sma200:>10,.2f} {value:>16,.0f} {rsi14:>8.2f} {str(dt):>12}"
+        rows.append(
+            (
+                symbol,
+                f"{close:,.2f}",
+                f"{sma20:,.2f}",
+                f"{sma50:,.2f}",
+                f"{sma150:,.2f}",
+                f"{sma200:,.2f}",
+                f"{value:,.0f}",
+                f"{rsi14:.2f}",
+                str(dt),
+            )
         )
+    print_table(headers, rows)
