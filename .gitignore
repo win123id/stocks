@@ -86,6 +86,7 @@ pip-wheel-metadata/
 *.sqlite3
 *.db
 instance/
+data/cache/
 
 # =========================
 # FastAPI / Flask specifics
