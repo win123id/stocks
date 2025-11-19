@@ -50,7 +50,7 @@ def scan_golden_cross_for_tickers(tickers, lookback_days: int = 5, label: str = 
     print(f"\nScanning {label_text} for 20/50 MA golden crosses...")
     results = []
     for symbol in tickers:
-        # 6 months of data is enough for MA20/MA50
+        
         hist = download_history(symbol, period="1y", interval="1d")
         if hist is None or "Close" not in hist.columns:
             continue

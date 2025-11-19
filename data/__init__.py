@@ -77,7 +77,7 @@ def download_history(symbol: str, period: str, interval: str = "1d"):
                     symbol,
                     start=start_date,
                     interval=interval,
-                    auto_adjust=True,
+                    auto_adjust=False,
                     progress=False,
                 )
             except Exception as e:
@@ -111,7 +111,7 @@ def download_history(symbol: str, period: str, interval: str = "1d"):
             symbol,
             period=period,
             interval=interval,
-            auto_adjust=True,
+            auto_adjust=False,
             progress=False,
         )
     except Exception as e:
