@@ -4,6 +4,7 @@ from scanners import (
     scan_golden_cross_for_tickers,
     scan_llv_sma50_value_for_tickers,
     scan_mode4_combo_for_tickers,
+    scan_lower_low_3days_for_tickers,
 )
 
 
@@ -27,7 +28,8 @@ def main():
     print("2 - LLV(5) > SMA50, close near SMA50 (0.99-1.02), value > 1B")
     print("3 - LLV(5) > SMA200, close near SMA200 (0.99-1.02), value > 1B")
     print("4 - Trend + squeeze + MACD + RSI combo filter")
-    mode = input("Enter 1, 2, 3 or 4 (default: 1): ").strip()
+    print("5 - 3 consecutive lower daily lows")
+    mode = input("Enter 1, 2, 3, 4 or 5 (default: 1): ").strip()
 
     if mode == "2":
         # Filter around SMA50: LLV(5) > SMA50, close ~ SMA50, value > 1B
@@ -53,6 +55,8 @@ def main():
         )
     elif mode == "4":
         scan_mode4_combo_for_tickers(tickers, label=label)
+    elif mode == "5":
+        scan_lower_low_3days_for_tickers(tickers, label=label)
     else:
         scan_golden_cross_for_tickers(tickers, label=label)
 

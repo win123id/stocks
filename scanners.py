@@ -281,3 +281,55 @@ def scan_mode4_combo_for_tickers(tickers, label: str = ""):
             )
         )
     print_table(headers, rows)
+
+
+def scan_lower_low_3days_for_tickers(tickers, label: str = ""):
+    if not tickers:
+        print("\nNo tickers to scan.")
+        return
+
+    label_text = label or "provided tickers"
+    print(f"\nScanning {label_text} for 3 consecutive lower daily lows...")
+
+    results = []
+    for symbol in tickers:
+        hist = download_history(symbol, period="1y", interval="1d")
+        if hist is None:
+            continue
+
+        required_cols = {"Low", "Close"}
+        if not required_cols.issubset(hist.columns):
+            continue
+
+        df = hist[["Low", "Close"]].dropna()
+        if len(df) < 3:
+            continue
+
+        last3 = df.iloc[-3:]
+        lows = last3["Low"].to_list()
+
+        if lows[0] > lows[1] > lows[2]:
+            last = last3.iloc[-1]
+            close = float(last["Close"])
+            idx = last3.index[-1]
+            last_date = idx.date() if hasattr(idx, "date") else idx
+            results.append((symbol, close, lows[0], lows[1], lows[2], last_date))
+
+    if not results:
+        print("\nNo stocks matched the 3-day consecutive lower low pattern in the selected lookback window.")
+        return
+
+    print("\nStocks with 3 consecutive lower daily lows:")
+    headers = ["Symbol", "Close", "Low-3", "Low-2", "Low-1", "Date"]
+    rows = [
+        (
+            symbol,
+            f"{close:,.2f}",
+            f"{low1:,.2f}",
+            f"{low2:,.2f}",
+            f"{low3:,.2f}",
+            str(dt),
+        )
+        for symbol, close, low1, low2, low3, dt in results
+    ]
+    print_table(headers, rows)
