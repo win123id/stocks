@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import os
 
 from data import load_tickers_from_json, download_history
@@ -10,6 +10,11 @@ from scanners import (
 )
 
 app = Flask(__name__)
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(app.root_path, "favicon.ico", mimetype="image/vnd.microsoft.icon")
 
 @app.route("/scan", methods=["GET"])
 def scan():
@@ -72,6 +77,7 @@ def home():
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Python Stock Scanner</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <style>
     :root {
       color-scheme: dark;
