@@ -44,7 +44,7 @@ def print_table(headers, rows):
 def scan_golden_cross_for_tickers(tickers, lookback_days: int = 5, label: str = ""):
     if not tickers:
         print("\nNo tickers to scan.")
-        return
+        return []
 
     label_text = label or "provided tickers"
     print(f"\nScanning {label_text} for 20/50 MA golden crosses...")
@@ -79,7 +79,7 @@ def scan_golden_cross_for_tickers(tickers, lookback_days: int = 5, label: str = 
 
     if not results:
         print("\nNo recent 20/50 MA golden crosses found in the selected lookback window.")
-        return
+        return []
 
     print("\nStocks with recent 20/50 MA golden crosses:")
     headers = ["Symbol", "Last Price", "GC Date"]
@@ -88,6 +88,16 @@ def scan_golden_cross_for_tickers(tickers, lookback_days: int = 5, label: str = 
         for symbol, last_close, gc_date in results
     ]
     print_table(headers, rows)
+
+    data = [
+        {
+            "symbol": symbol,
+            "last_price": float(last_close),
+            "gc_date": str(gc_date),
+        }
+        for symbol, last_close, gc_date in results
+    ]
+    return data
 
 
 
@@ -102,7 +112,7 @@ def scan_llv_sma50_value_for_tickers(
 ):
     if not tickers:
         print("\nNo tickers to scan.")
-        return
+        return []
 
     label_text = label or "provided tickers"
     print(
@@ -150,7 +160,7 @@ def scan_llv_sma50_value_for_tickers(
 
     if not results:
         print("\nNo stocks matched the LLV/SMA{} + value filter in the selected lookback window.".format(sma_period))
-        return
+        return []
 
     print("\nStocks matching LLV(5) > SMA{}, close near SMA{}, value > 1B:".format(sma_period, sma_period))
     headers = ["Symbol", "Close", f"SMA{sma_period}", "Value", "Date"]
@@ -160,12 +170,24 @@ def scan_llv_sma50_value_for_tickers(
     ]
     print_table(headers, rows)
 
+    data = [
+        {
+            "symbol": symbol,
+            "close": float(close),
+            "sma": float(sma),
+            "value": float(value),
+            "date": str(dt),
+        }
+        for symbol, close, sma, value, dt in results
+    ]
+    return data
+
 
 
 def scan_mode4_combo_for_tickers(tickers, label: str = ""):
     if not tickers:
         print("\nNo tickers to scan.")
-        return
+        return []
 
     label_text = label or "provided tickers"
     print(
@@ -241,7 +263,7 @@ def scan_mode4_combo_for_tickers(tickers, label: str = ""):
 
     if not results:
         print("\nNo stocks matched the mode 4 combo filter in the selected lookback window.")
-        return
+        return []
 
     print("\nStocks matching mode 4 combo filter:")
     headers = [
@@ -282,11 +304,37 @@ def scan_mode4_combo_for_tickers(tickers, label: str = ""):
         )
     print_table(headers, rows)
 
+    data = [
+        {
+            "symbol": symbol,
+            "close": float(close),
+            "sma20": float(sma20),
+            "sma50": float(sma50),
+            "sma150": float(sma150),
+            "sma200": float(sma200),
+            "value": float(value),
+            "rsi14": float(rsi14),
+            "date": str(dt),
+        }
+        for (
+            symbol,
+            close,
+            sma20,
+            sma50,
+            sma150,
+            sma200,
+            value,
+            rsi14,
+            dt,
+        ) in results
+    ]
+    return data
+
 
 def scan_lower_low_3days_for_tickers(tickers, label: str = ""):
     if not tickers:
         print("\nNo tickers to scan.")
-        return
+        return []
 
     label_text = label or "provided tickers"
     print(f"\nScanning {label_text} for 3 consecutive lower daily lows...")
@@ -317,7 +365,7 @@ def scan_lower_low_3days_for_tickers(tickers, label: str = ""):
 
     if not results:
         print("\nNo stocks matched the 3-day consecutive lower low pattern in the selected lookback window.")
-        return
+        return []
 
     print("\nStocks with 3 consecutive lower daily lows:")
     headers = ["Symbol", "Close", "Low-3", "Low-2", "Low-1", "Date"]
@@ -333,3 +381,16 @@ def scan_lower_low_3days_for_tickers(tickers, label: str = ""):
         for symbol, close, low1, low2, low3, dt in results
     ]
     print_table(headers, rows)
+
+    data = [
+        {
+            "symbol": symbol,
+            "close": float(close),
+            "low_3": float(low1),
+            "low_2": float(low2),
+            "low_1": float(low3),
+            "date": str(dt),
+        }
+        for symbol, close, low1, low2, low3, dt in results
+    ]
+    return data
